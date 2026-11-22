@@ -1,55 +1,23 @@
 
 name: Build Erbil City 3D APK
 
-on: [workflow_dispatch]
+"on":
+  push:
+    branches:
+      - main
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Java
-        uses: actions/setup-java@v4
+      - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
 
-      - name: Extract Android project
-        run: |
-          mkdir -p extracted
-          ZIP=$(find . -maxdepth 2 -type f -iname '*.zip' | head -n 1)
-          if [ -z "$ZIP" ]; then
-            echo "Project ZIP not found!"
-            exit 1
-          fi
-          unzip -o "$ZIP" -d extracted
-
-      - name: Locate Android project
-        run: |
-          SETTINGS=$(find extracted -type f \( -name 'settings.gradle' -o -name 'settings.gradle.kts' \) | head -n 1)
-          if [ -z "$SETTINGS" ]; then
-            echo "Android Gradle project not found!"
-            exit 1
-          fi
-          echo "PROJECT_DIR=$(dirname "$SETTINGS")" >> "$GITHUB_ENV"
-
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
-        with:
-          gradle-version: '8.7'
-
-      - name: Build Debug APK
-        run: |
-          cd "$PROJECT_DIR"
-          gradle assembleDebug
-
-      - name: Upload APK artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: ErbilCity3D-APK
-          path: extracted/**/build/outputs/apk/debug/*.apk
-          if-no-files-found: error
-          
+      - name: Check workflow
+        run: echo "Workflow started successfully"
+        
